@@ -20,4 +20,3 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('/', [CarFilteringController::class,"getData"]);
-Route::get('/',[CarFilteringController::class,"hello_there"]);
