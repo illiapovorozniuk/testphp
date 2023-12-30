@@ -19,4 +19,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/', [CarFilteringController::class,"getData"]);
+Route::post('/filterbooking', [CarFilteringController::class,"getFilteringData"]);
+Route::post('/getYears', [CarFilteringController::class,"getYears"]);

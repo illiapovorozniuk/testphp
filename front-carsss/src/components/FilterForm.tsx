@@ -1,6 +1,7 @@
 import { FC, useState, useEffect } from "react";
 import { Form } from "react-bootstrap";
 import { IBooking, ISource } from "../types/IBooking";
+import axios from "axios";
 
 interface IProps {
   setTableData: (state: IBooking[]) => void;
@@ -12,13 +13,16 @@ const FilterForm: FC<IProps> = ({ setTableData }) => {
     car_id: 1,
     source: "carsss",
   });
+  const [years, setYears] = useState<{ year: number }[]>([]);
 
   const [booking_id, setBooking_id] = useState<number>(1);
+  const [year, setYear] = useState<number>();
   const [car_id, setCar_id] = useState<number>(1);
   const [source, setSource] = useState<"carsss" | "direct" | "other">("carsss");
 
   useEffect(() => {
     getFilterBooking(requestBody);
+    setYearsHandle();
   }, []);
 
   const handleChange = () => {
@@ -34,7 +38,7 @@ const FilterForm: FC<IProps> = ({ setTableData }) => {
 
   const getFilterBooking = async (requestBody: IBooking) => {
     try {
-      fetch("http://localhost:8000/api", {
+      fetch("http://localhost:8000/api/filterbooking", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -50,13 +54,38 @@ const FilterForm: FC<IProps> = ({ setTableData }) => {
       console.error("Error fetching data:", error);
     }
   };
+  const setYearsHandle = () => {
+    axios.post("http://localhost:8000/api/getYears").then((response) => {
+      setYears(response.data);
+    });
+  };
 
   return (
-    <div className="">
-      <form>
-        <label>
-          Select Option 1:
+    <form className="m-3">
+      <div className="row">
+        <div className="col">
+          <label className="form-label">Year *</label>
           <select
+            className="form-select "
+            value={year}
+            onChange={(e) => {
+              // setBooking_id(Number(e.target.value));
+              // getFilterBooking({
+              //   ...requestBody,
+              //   booking_id: Number(e.target.value),
+              // });
+              setYear(Number(e.target.value));
+            }}
+          >
+            {years.map((year, i) => (
+              <option value={year.year}>{year.year}</option>
+            ))}
+          </select>
+        </div>
+        <div className="col">
+          <label className="form-label">Month</label>
+          <select
+            className="form-select form-select-sm"
             value={booking_id}
             onChange={(e) => {
               setBooking_id(Number(e.target.value));
@@ -66,16 +95,14 @@ const FilterForm: FC<IProps> = ({ setTableData }) => {
               });
             }}
           >
-            <option value={0}>Select an option</option>
-            <option value={1}>Option 1</option>
-            <option value={62}>Option 62</option>
-            <option value={10}>Option 10</option>
+            {/* <option>Select an option</option>
+            {years.map((year) => (
+              <option value={year}>{year}</option>
+            ))} */}
           </select>
-        </label>
-
-        <br />
-      </form>
-    </div>
+        </div>
+      </div>
+    </form>
   );
 };
 
