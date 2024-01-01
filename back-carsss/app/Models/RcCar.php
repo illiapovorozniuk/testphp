@@ -14,7 +14,7 @@ RcCar extends Model
 
     public function carWithModel(){
         return $this->hasOne(RcCarsModel::class,'car_model_id','car_model_id')
-            ->select('car_model_id', 'car_brand_id', 'slug')
+            ->select('car_model_id', 'car_brand_id', 'slug','attribute_interior_color')
             ->with('modelWithBrand');
     }
 

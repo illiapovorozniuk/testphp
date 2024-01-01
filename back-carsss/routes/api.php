@@ -23,4 +23,3 @@ Route::post('/filterbooking', [CarFilteringController::class,"getFilteringData"]
 Route::post('/getYears', [CarFilteringController::class,"getYears"]);
 
 
-Route::post('/temp',[CarFilteringController::class,"getTemptest"]);
