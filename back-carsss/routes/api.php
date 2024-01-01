@@ -21,3 +21,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('/filterbooking', [CarFilteringController::class,"getFilteringData"]);
 Route::post('/getYears', [CarFilteringController::class,"getYears"]);
+
+
+Route::post('/temp',[CarFilteringController::class,"getTemptest"]);

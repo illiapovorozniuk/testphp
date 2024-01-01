@@ -11,8 +11,10 @@ class RcBooking extends Model
 
     protected $fillable  = ['booking_id', 'car_id', 'start_date', 'end_date'];
 
-    public function car(){
-        return $this->hasOne(RcCar::class,'car_id','car_id')->select('car_id','car_model_id', 'registration_number', 'created_at');
+    public function carWithModel(){
+        return $this->hasOne(RcCar::class,'car_id','car_id')
+            ->select('car_id','car_model_id', 'registration_number', 'created_at')
+            ->with('carWithModel');
     }
     public static function getYears(){
         return RcBooking::selectRaw('YEAR(created_at) as year')->distinct()->get();
