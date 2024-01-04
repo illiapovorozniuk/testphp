@@ -12,9 +12,17 @@ function App() {
   };
   return (
     <>
-      <div className="d-flex flex-row">
-        <FilterForm setTableData={handleSetTableData} />
-        <ResultTable tableData={tableData} />
+      <div className="container_body">
+        <div className="d-flex flex-row filter_booking">
+          <FilterForm setTableData={handleSetTableData} />
+          <ResultTable tableData={tableData} />
+        </div>
+      </div>
+
+      <div className="  bg-secondary footer">
+        <footer className="text-center text-white ">
+          <div className="text-center p-3 bac">© 2023 Strider4ever</div>
+        </footer>
       </div>
     </>
   );

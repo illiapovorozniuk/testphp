@@ -47,27 +47,9 @@ const FilterForm: FC<IProps> = ({ setTableData }) => {
       .post("http://localhost:8000/api/filterbooking", requestBody)
       .then((response) => {
         setTableData(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
       });
-    // try {
-    //   fetch("http://localhost:8000/api/filterbooking", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(requestBody),
-    //   })
-    //     .then((response) => response.json())
-    //     .then((data: IBooking[]) => {
-    //       // console.log(data[0]);
-    //       setTableData(data);
-    //     });
-    // } catch (error) {
-    //   console.error("Error fetching data:", error);
-    // }
   };
+
   const setYearsHandle = () => {
     axios.get("http://localhost:8000/api/getYears").then((response) => {
       setYears(response.data);
@@ -77,8 +59,8 @@ const FilterForm: FC<IProps> = ({ setTableData }) => {
   return (
     <form className="m-3 w-25">
       <div className="row">
-        <div className="col">
-          <label className="form-label">Year *</label>
+        <div className="col form-group">
+          <label className="form-label">Year</label>
           <select
             className="form-select "
             value={year}
@@ -92,11 +74,13 @@ const FilterForm: FC<IProps> = ({ setTableData }) => {
             }}
           >
             {years.map((year) => (
-              <option value={year.year}>{year.year}</option>
+              <option key={year.year} value={year.year}>
+                {year.year}
+              </option>
             ))}
           </select>
         </div>
-        <div className="col">
+        <div className="col form-group">
           <label className="form-label">Month</label>
           <select
             className="form-select"
@@ -111,7 +95,9 @@ const FilterForm: FC<IProps> = ({ setTableData }) => {
             }}
           >
             {months.map((month, i) => (
-              <option value={i + 1}>{month}</option>
+              <option key={i} value={i + 1}>
+                {month}
+              </option>
             ))}
           </select>
         </div>

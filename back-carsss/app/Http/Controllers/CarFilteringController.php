@@ -16,11 +16,8 @@ class CarFilteringController extends Controller
     function getFilteringData(Request $request){
         $year = $request->input()['year'];
         $month = $request->input()['month'];
-//        ['booking_id', '=', $request->input()['id']]
-
-        $whereArr = $month==null&& $month==-1?
-            [['start_date', '>=', $year . '-01-01'],['start_date', '<=', $year . '-12-31']]
-            : [['start_date', '>=', $year . '-'.$month.'-01'],['start_date', '<=', $year . '-'.$month.'-'.cal_days_in_month(CAL_GREGORIAN, $month, $year)]]
+        $whereArr
+            =   [['start_date', '>=', $year . '-'.$month.'-01'],['start_date', '<=', $year . '-'.$month.'-'.cal_days_in_month(CAL_GREGORIAN, $month, $year)]]
         ;
 
 
@@ -54,10 +51,6 @@ class CarFilteringController extends Controller
             $responseBody[$key]['schedule'] = $this->countOccupiedDays($elem['schedule']);
         }
 
-
-//        return $responseBody;
-
-//        $someddedd = $this->countOccupiedDays($responseBody[63]['schedule']);
         return $responseBody;
     }
 
@@ -75,7 +68,12 @@ class CarFilteringController extends Controller
             return strtotime($a[0]) - strtotime($b[0]);
         });
 
-        $periodHours=[];
+        $daysInMonth = cal_days_in_month(CAL_GREGORIAN, (new DateTime($schedule[0][0]))->format('m'), (new DateTime($schedule[0][0]))->format('Y'));
+        if((new DateTime($schedule[count($schedule)-1][0]))->format('m')!=(new DateTime($schedule[count($schedule)-1][1]))->format('m')){
+            $schedule[count($schedule)-1][1] =  (new DateTime($schedule[0][0]))->format('Y').
+                '-'.(new DateTime($schedule[0][0]))->format('m').'-'.$daysInMonth.' 23:00:00';
+        }
+            $periodHours=[];
         $start_period = new DateTime( $schedule[0][0]);
         $end_period = new DateTime( $schedule[count($schedule) - 1][1]);
 
@@ -130,10 +128,8 @@ class CarFilteringController extends Controller
                     }
                     else
                         $periodHours[$key] +=12*3600;
-
                 }
 
-//                $periodHours[$key] +=1;
                //Якщо періоди закінчення і початку накладаються, або наступний день це початок нового букінгу
                 if(isset($schedule[1])&&$currentEnd->format('d')==$key){
                      if((new DateTime($schedule[1][0]))->format('d')==$key
@@ -142,9 +138,7 @@ class CarFilteringController extends Controller
                         array_shift($schedule);
                         $currentStart = new DateTime($schedule[0][0]);
                         $currentEnd =  new DateTime($schedule[0][1]);
-//                        $periodHours[$key] +=1;
                         if($currentStart->format('d')==$key) {
-//                            $periodHours[$key] +="NIGHT";
                             goto repeatLogicAdding;
                         }
                     }
@@ -152,12 +146,10 @@ class CarFilteringController extends Controller
                         array_shift($schedule);
                         $currentStart = new DateTime($schedule[0][0]);
                         $currentEnd =  new DateTime($schedule[0][1]);
-//                        $periodHours[$key] +="DAY";
                         goto repeatLogicAdding;
                     }
 
                 }
-//                $periodHours[$key] =$currentStart->format('d'). '  '. $currentEnd->format('d');
             }
             else if($currentEnd->format('d')>$key )
                 continue;
@@ -167,26 +159,14 @@ class CarFilteringController extends Controller
                 if(isset($schedule[0])){
                     $currentStart = new DateTime($schedule[0][0]);
                     $currentEnd =  new DateTime($schedule[0][1]);
-
                 }
             }
         }
-
         $countOcupiedDays = 0;
         foreach ($periodHours as $day)
             if($day>3*3600)
                 $countOcupiedDays++;
 
-
-        return $countOcupiedDays;
+        return  [$daysInMonth-$countOcupiedDays,$daysInMonth] ;
     }
-
-function diffDatesToSec(DateTime $datetime1, DateTime $datetime2){
-
-    $dif = $datetime1->diff($datetime2);
-    $seconds = $dif->days*24*60*60
-    + $dif->h*60*60 +$dif->i*60 + $dif->s;
-
-    return $seconds;
-}
 }
