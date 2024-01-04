@@ -11,30 +11,25 @@ const ResultTable: FC<IProps> = ({ tableData }) => {
       <table className="table">
         <thead>
           <tr>
-            <th scope="col">№</th>
-            <th scope="col">First</th>
-            <th scope="col">Last</th>
-            <th scope="col">Handle</th>
+            <th scope="col">CarID</th>
+            <th scope="col">Busy days</th>
+            <th scope="col">Car</th>
+            <th scope="col">Created</th>
+            <th scope="col">Color</th>
+            <th scope="col">Brand</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-          </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-          </tr>
-          <tr>
-            <th scope="row">3</th>
-            <td colspan="2">Larry the Bird</td>
-            <td>@twitter</td>
-          </tr>
+          {tableData.map((elem) => (
+            <tr>
+              <th scope="row">{elem.car_id}</th>
+              <td>{elem.schedule}</td>
+              <td>{elem.car_slug}</td>
+              <td>{elem.car_created_at}</td>
+              <td>{elem.color}</td>
+              <td>{elem.brand_slug}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </>

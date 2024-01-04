@@ -1,6 +1,5 @@
 import { FC, useState, useEffect } from "react";
-import { Form } from "react-bootstrap";
-import { IBooking, ISource } from "../types/IBooking";
+import { IBooking } from "../types/IBooking";
 import axios from "axios";
 
 interface IProps {
@@ -8,60 +7,75 @@ interface IProps {
 }
 
 const FilterForm: FC<IProps> = ({ setTableData }) => {
-  const [requestBody, setRequestBody] = useState<IBooking>({
-    booking_id: 1,
-    car_id: 1,
-    source: "carsss",
+  const [requestBody, setRequestBody] = useState<{
+    year: number;
+    month: number;
+  }>({
+    year: 2023,
+    month: 1,
   });
   const [years, setYears] = useState<{ year: number }[]>([]);
+  const [months, setMonths] = useState<string[]>([]);
 
-  const [booking_id, setBooking_id] = useState<number>(1);
-  const [year, setYear] = useState<number>();
-  const [car_id, setCar_id] = useState<number>(1);
-  const [source, setSource] = useState<"carsss" | "direct" | "other">("carsss");
+  const [year, setYear] = useState<number>(2023);
+  const [month, setMonth] = useState<number>(1);
 
   useEffect(() => {
     getFilterBooking(requestBody);
     setYearsHandle();
+    setMonths(
+      new Array(12)
+        .fill(0)
+        .map((_, i) =>
+          new Date(2000, i, 1).toLocaleString("en", { month: "long" })
+        )
+    );
   }, []);
 
   const handleChange = () => {
-    setRequestBody({
-      booking_id: booking_id,
-      car_id: car_id,
-      source: source,
-    });
+    setRequestBody({ year: Number(year), month: Number(month) });
   };
   useEffect(() => {
     handleChange();
-  }, [booking_id, car_id, source]);
+  }, [year, month]);
 
-  const getFilterBooking = async (requestBody: IBooking) => {
-    try {
-      fetch("http://localhost:8000/api/filterbooking", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
+  const getFilterBooking = async (requestBody: {
+    year: number;
+    month: number;
+  }) => {
+    axios
+      .post("http://localhost:8000/api/filterbooking", requestBody)
+      .then((response) => {
+        setTableData(response.data);
       })
-        .then((response) => response.json())
-        .then((data: IBooking[]) => {
-          console.log(data[0]);
-          setTableData(data);
-        });
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+    // try {
+    //   fetch("http://localhost:8000/api/filterbooking", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify(requestBody),
+    //   })
+    //     .then((response) => response.json())
+    //     .then((data: IBooking[]) => {
+    //       // console.log(data[0]);
+    //       setTableData(data);
+    //     });
+    // } catch (error) {
+    //   console.error("Error fetching data:", error);
+    // }
   };
   const setYearsHandle = () => {
-    axios.post("http://localhost:8000/api/getYears").then((response) => {
+    axios.get("http://localhost:8000/api/getYears").then((response) => {
       setYears(response.data);
     });
   };
 
   return (
-    <form className="m-3">
+    <form className="m-3 w-25">
       <div className="row">
         <div className="col">
           <label className="form-label">Year *</label>
@@ -69,15 +83,15 @@ const FilterForm: FC<IProps> = ({ setTableData }) => {
             className="form-select "
             value={year}
             onChange={(e) => {
-              // setBooking_id(Number(e.target.value));
-              // getFilterBooking({
-              //   ...requestBody,
-              //   booking_id: Number(e.target.value),
-              // });
+              getFilterBooking({
+                ...requestBody,
+                year: Number(e.target.value),
+                month: Number(month),
+              });
               setYear(Number(e.target.value));
             }}
           >
-            {years.map((year, i) => (
+            {years.map((year) => (
               <option value={year.year}>{year.year}</option>
             ))}
           </select>
@@ -85,20 +99,20 @@ const FilterForm: FC<IProps> = ({ setTableData }) => {
         <div className="col">
           <label className="form-label">Month</label>
           <select
-            className="form-select form-select-sm"
-            value={booking_id}
+            className="form-select"
+            value={month}
             onChange={(e) => {
-              setBooking_id(Number(e.target.value));
               getFilterBooking({
                 ...requestBody,
-                booking_id: Number(e.target.value),
+                month: Number(e.target.value),
+                year: Number(year),
               });
+              setMonth(Number(e.target.value));
             }}
           >
-            {/* <option>Select an option</option>
-            {years.map((year) => (
-              <option value={year}>{year}</option>
-            ))} */}
+            {months.map((month, i) => (
+              <option value={i + 1}>{month}</option>
+            ))}
           </select>
         </div>
       </div>

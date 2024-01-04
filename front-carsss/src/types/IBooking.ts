@@ -1,5 +1,9 @@
 export interface IBooking {
-  booking_id: number;
   car_id: number;
-  source: "carsss" | "direct" | "other";
+  schedule: number;
+  registration_number: string;
+  car_slug: string;
+  car_created_at: string;
+  color: string;
+  brand_slug: string;
 }

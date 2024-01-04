@@ -14,9 +14,16 @@ class CarFilteringController extends Controller
     //
 
     function getFilteringData(Request $request){
+        $year = $request->input()['year'];
+        $month = $request->input()['month'];
 //        ['booking_id', '=', $request->input()['id']]
 
-        $whereArr = [['start_date', '>=', 2023 . '-01-01'],['start_date', '<=', 2023 . '-01-31']];
+        $whereArr = $month==null&& $month==-1?
+            [['start_date', '>=', $year . '-01-01'],['start_date', '<=', $year . '-12-31']]
+            : [['start_date', '>=', $year . '-'.$month.'-01'],['start_date', '<=', $year . '-'.$month.'-'.cal_days_in_month(CAL_GREGORIAN, $month, $year)]]
+        ;
+
+
         array_push($whereArr,['status','=',1]);
         array_push($whereArr,['company_id','=',1]);
         $bookings = RcBooking::select('booking_id', 'car_id','created_at','start_date','end_date')->where($whereArr)
@@ -63,7 +70,7 @@ class CarFilteringController extends Controller
 
     private function countOccupiedDays( $schedule)
     {
-
+        //Сортування періодів
         usort($schedule,function ($a, $b){
             return strtotime($a[0]) - strtotime($b[0]);
         });
